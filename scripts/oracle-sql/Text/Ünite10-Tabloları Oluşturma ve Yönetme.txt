@@ -1,0 +1,173 @@
+--------------------------------------------
+--Tablo Oluşturma
+--------------------------------------------
+
+CREATE TABLE EGITIM.CEZA_BILGI
+(
+  PERSONEL_ID       NUMBER,
+  CEZA_ACIKLAMA     VARCHAR2(100 BYTE),
+  BASLANGIC_TARIHI  DATE DEFAULT SYSDATE,
+  BITIS_TARIHI      DATE
+)
+
+--------------------------------------------
+
+CREATE TABLE PERSONEL_EGITIM
+(
+  PERSONEL_ID      NUMBER,
+  EGITIM_ADI       VARCHAR2(100),
+  BASLANGIC_TARIHI DATE,
+  BITIS_TARIHI     DATE,
+  EGITIM_TURU      INTEGER
+)
+
+--------------------------------------------
+
+create table customers
+( 
+  customer_id number(8) not null,
+  customer_name varchar2(100) not null,
+  address varchar2(200),
+  city varchar2(50),
+  state varchar2(25),
+  zip_code varchar2(10)
+);
+
+--------------------------------------------
+--Alt Sorgular ile Tablo Oluşturma
+--------------------------------------------
+
+create table personel_uzman as 
+select personel_id, ad, 
+       soyad, maas,
+	     (maas+prim) hesaba_yatan
+from personel
+where unvan = ‘UZMAN’
+
+--------------------------------------------
+
+create table yonetici_yeni as 
+select yn.yonetici_id, ps.ad, ps.soyad, 
+	     ps.unvan, kn.konum_adi 
+from yonetici yn, personel ps, konum kn
+where ps.personel_id = yn.personel_id
+      and ps.konum_id = kn.konum_id
+
+--------------------------------------------
+--ALTER TABLE Komutları
+--------------------------------------------
+
+--Kolon ekleme
+alter table yonetici add (sicil_no number);
+
+
+--Kolon özelliği değiştirme
+alter table yonetici modify (unvan varchar2(150 byte));
+
+
+--Kolona default değer verme
+alter table yonetici modify (yonetici_id default 0);
+
+
+--Kolon drop etme
+alter table yonetici drop column sicil_no;
+
+--Kolon isimi değiştirme
+alter table yonetici rename column ad to adi;
+
+
+--Tabloyu read-only moda geçirme
+alter table yonetici read only;
+
+
+--Tablonun ismini değiştirme
+alter table yonetici rename to yoneticiler;
+
+
+--Tabloya partition ekleme
+alter table yonetici add partition part2 values ('201005')
+
+--------------------------------------------
+--ALTER TABLE Komutları - Comment
+--------------------------------------------
+
+comment on table cars is 'Arabalara ait bilgiler bu tabloda tutulmaktadır';
+comment on table personel is 'Bu tabloda, genel personel bilgileri yer almaktadır'; 
+
+comment on column cars.brand is 'Araba markalarını belirtir';
+comment on column product.net_price is 'Ürünlerin net ücretleri bu kolonda tutulmaktadır'; 
+
+--------------------------------------------
+--ALTER TABLE Komutları - Drop Column
+--------------------------------------------
+
+create table personel_temp as select * from personel;
+-----------------------------------------------------
+alter table personel_temp drop column maas;
+
+alter table personel_temp drop column ad;
+
+alter table personel_temp drop column soyad;
+
+-----------------------------------------------------
+--ALIŞTIRMALARIN CEVAPLARI
+-----------------------------------------------------
+
+--------------------------------------------
+--Tablo Oluşturma
+--------------------------------------------
+
+CREATE TABLE DERSLER
+(
+    DERS_ID NUMBER,
+    DERS_ISMI VARCHAR2(50),
+    DERS_ACIKLAMASI VARCHAR2(250),
+    ILK_DERS_TARIHI DATE,
+    DERS_KAPASITESI INTEGER DEFAULT 20,
+    DERS_HOCASI VARCHAR2(70) DEFAULT 'Henüz atama yapılmamış'
+)
+
+--------------------------------------------
+--Alt Sorgular ile Tablo Oluşturma
+--------------------------------------------
+
+create table customer_orders as
+select 
+    c.customer_id, c.company_name, c.contact_name, c.city,  
+    o.order_date, o.freight, o.ship_city
+from customers c, orders o 
+where c.customer_id = o.customer_id;
+
+--------------------------------------------
+--ALTER TABLE Komutları
+--------------------------------------------
+
+create table filmoyuncu 
+(
+    filmid int,
+    oyuncuismi varchar (70),
+    oyuncusoyadi  varchar (70)
+);
+
+--Kolon isimlerini kelimeler arasında alt tire (_) olacak şekilde değiştirin.
+alter table filmoyuncu rename column filmid to film_id;
+alter table filmoyuncu rename column oyuncuismi to oyuncu_ismi;
+alter table filmoyuncu rename column oyuncusoyadi to oyuncu_soyadi;
+
+--Doğum günü kolonu ekleyin.
+alter table filmoyuncu add (dogum_tarihi date);
+
+--250 karakterlik bir adres kolonu ekleyin
+alter table filmoyuncu add (adres varchar2(250));
+
+--Null olamayacak şekilde bir şehir kolonu ekleyin.
+alter table filmoyuncu add (sehir varchar2(50) not null);
+
+--Default değeri ‘Warner Bros’ olacak şekilde şirket kolonu ekleyin.
+alter table filmoyuncu add (sirket varchar2(150) default 'Warner Bros');
+
+--Adres kolonunun uzunluğunu 500 karaktere çıkartın.
+alter table filmoyuncu modify (adres varchar2(500));
+
+--Tablonun ismini film_oyuncu olarak değiştirin
+alter table filmoyuncu rename to film_oyuncu;

@@ -1,0 +1,243 @@
+--------------------------------------------
+--NOT NULL Constraint
+--------------------------------------------
+
+CREATE TABLE PERSONEL_EGITIM
+(
+  PERSONEL_ID      NUMBER        NOT NULL,      
+  EGITIM_ADI       VARCHAR2(100) NOT NULL,
+  BASLANGIC        DATE,
+  BITIS            DATE,
+  EGITIM_TURU      INTEGER
+)
+
+insert into personel_egitim
+(personel_id, egitim_adi, baslangic, bitis, egitim_turu)
+values (5555, null, sysdate+10, sysdate+15, 1)
+
+--------------------------------------------
+
+--Tablo create edilirken:
+
+create table kitap
+(
+kitap_id integer not null,
+kitap_adi varchar2(120) not null,
+yazar_adi varchar2(100),
+isbn varchar2(40),
+basim_yili integer,
+sayfa_adedi integer
+);
+
+--Tablo varken:
+
+alter table kitap modify yazar_adi varchar2(100) not null;
+
+insert into kitap(kitap_id, kitap_adi, yazar_adi, isbn, basim_yili, sayfa_adedi)
+values(1, 'Oracle Öğreniyorum', null, null, 2023, 345);
+
+--------------------------------------------
+--UNIQUE Constraint
+--------------------------------------------
+
+CREATE TABLE PERSONEL_EGITIM
+(
+  PERSONEL_ID      NUMBER        NOT NULL,      
+  EGITIM_ADI       VARCHAR2(100) NOT NULL,
+  BASLANGIC        DATE,
+  BITIS            DATE,
+  EGITIM_TURU      INTEGER,
+  constraint pe_uc1 unique(personel_id, egitim_adi)
+);
+
+--Tablo varken:
+
+create unique index pe_uc1 on personel_eğitim (personel_id, egitim_adi)
+
+--------------------------------------------
+
+--Tablo create edilirken:
+
+create table kitap
+(
+kitap_id integer not null,
+kitap_adi varchar2(120) not null unique,
+yazar_adi varchar2(100),
+isbn varchar2(40),
+basim_yili integer,
+sayfa_adedi integer,
+unique(kitap_id),
+unique(kitap_adi, yazar_adi)
+);
+
+--Tablo varken:
+
+alter table kitap add constraint uq_isbn unique(isbn);
+
+--------------------------------------------
+--PRIMARY KEY Constraint
+--------------------------------------------
+
+--Tablo create edilirken:
+
+create table izin_turleri
+(
+  izin_turu  integer primary key,
+  aciklama   varchar2(50 byte)
+);
+
+--Tablo varken:
+
+alter table izin_turleri
+   add constraint pk_izin_turu primary key (izin_turu);
+
+--------------------------------------------
+--FOREIGN KEY Constraint
+--------------------------------------------
+
+--Tablo create edilirken:
+…
+constraint fk_konum foreign key (konum_id)
+      references konum (konum_id) 
+…
+
+--Tablo varken:
+
+alter table personel add constraint fk_dept
+  foreign key (dept_id) references departman (dept_id)
+
+--------------------------------------------
+
+create table musteri
+(
+    musteri_id number,
+    musteri_ismi varchar(255) not null
+);
+
+create table yetkili
+(
+    yetkili_id number primary key,
+    musteri_id number,
+    yetkili_ismi varchar2(150) not null,
+    constraint fk_musteri
+        foreign key(musteri_id) 
+        references musteri(musteri_id)
+);
+
+alter table musteri 
+add constraint pk_musteri primary key (musteri_id);
+
+insert into musteri (musteri_id, musteri_ismi) values(1, 'Apple'); 
+insert into musteri (musteri_id, musteri_ismi) values(2, 'Google'); 
+insert into musteri (musteri_id, musteri_ismi) values(3, 'Amazon'); 
+
+insert into yetkili (yetkili_id, musteri_id, yetkili_ismi) values(1, 1, 'Alex'); 
+insert into yetkili (yetkili_id, musteri_id, yetkili_ismi) values(2, 2, 'Michael'); 
+insert into yetkili (yetkili_id, musteri_id, yetkili_ismi) values(3, 3, 'Jane'); 
+insert into yetkili (yetkili_id, musteri_id, yetkili_ismi) values(4, 3, 'Judi');
+
+--------------------------------------------
+--CHECK Constraint
+--------------------------------------------
+
+--Tablo create edilirken:
+
+create table personel
+(
+  sicil       number check(sicil > 0),
+  maas        number,
+  unvan       varchar2(50),
+  bas_tarih   date,
+  bit_tarih   date,
+  constraint ck_maas1 check(maas >= 1000),
+  constraint ck_maas2 check(maas between 1000 and 20000),
+  constraint ck_unvan check(unvan in (‘Uzman’, ‘Müdür’)),
+  check(bas_tarih < bit_tarih)
+);
+
+--Tablo varken:
+
+alter table personel add constraint ck_maas1 check (maas > 1000)
+
+--------------------------------------------
+--Constraint - Disable & Enable
+--------------------------------------------
+
+alter table prm_iller add constraint fk_prm_iller 
+  foreign key (bolge_kodu) 
+  references prm_bolge(bolge_kodu) on delete cascade;
+
+--Disable
+alter table iller disable constraint fk_iller;
+
+--Enable
+alter table iller enable constraint fk_iller;
+
+
+--------------------------------------------
+--Constraint Örnekleri
+--------------------------------------------
+
+--Bölge tablosu oluşturuluyor
+CREATE TABLE BOLGE
+(
+    BOLGE_KODU INTEGER PRIMARY KEY,
+    BOLGE_ADI  VARCHAR2(100 BYTE) NOT NULL 
+);
+
+--İl tablosu oluşturuluyor
+CREATE TABLE IL
+(
+    IL_KODU     INTEGER NOT NULL,
+    IL_ADI      VARCHAR2(50 BYTE) NOT NULL,
+    BOLGE_KODU  INTEGER,
+    CONSTRAINT FK_IL1 FOREIGN KEY (BOLGE_KODU) REFERENCES BOLGE(BOLGE_KODU)
+);
+
+--Bölgeler ekleniyor
+INSERT INTO BOLGE VALUES(1, 'İÇ ANADOLU');
+
+INSERT INTO BOLGE VALUES(1, 'MARMARA'); 
+
+INSERT INTO BOLGE VALUES(2, '');
+
+INSERT INTO BOLGE VALUES(2, 'MARMARA');
+
+--İller ekleniyor
+INSERT INTO IL VALUES(6, 'ANKARA', 1);
+
+INSERT INTO IL VALUES(61, 'TRABZON', 5); 
+
+--Bölge siliniyor
+DELETE FROM BOLGE WHERE BOLGE_KODU = 1;
+
+-----------------------------------------------------
+--ALIŞTIRMALARIN CEVAPLARI
+-----------------------------------------------------
+
+--------------------------------------------
+--PRIMARY KEY Constraint
+--------------------------------------------
+
+alter table kitap 
+add constraint pk_kitap primary key (kitap_id);
+
+--------------------------------------------
+--FOREIGN KEY Constraint
+--------------------------------------------
+
+alter table personel 
+add constraint fk_konum_id foreign key (konum_id) references konum(konum_id)
+
+--------------------------------------------
+--CHECK Constraint
+--------------------------------------------
+
+alter table cars add (segment varchar2(1));
+
+
+alter table cars 
+add constraint ck_cars_segment check (segment in('A','B','C','D','E'));
+
+
+insert into cars values(13,'Bugatti',340000,0,'S');

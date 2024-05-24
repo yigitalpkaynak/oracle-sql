@@ -1,0 +1,83 @@
+--------------------------------------------
+--Index Oluşturma
+--------------------------------------------
+
+CREATE INDEX PERSONEL_NI1 ON PERSONEL(PERSONEL_ID);
+
+--------------------------------------------
+
+CREATE INDEX PI_NI1 ON PERSONEL_IZINLERI(PERSONEL_ID, IZIN_TURU)
+
+--------------------------------------------
+--Index Üzerinden Verilere Erişme
+--------------------------------------------
+
+select * from personel;
+
+select * from personel where ad = 'SERKAN';
+
+select * from personel where personel_id = 1000;
+
+--------------------------------------------
+--Index Oluşturma
+--------------------------------------------
+
+alter table personel add (email varchar2(150));
+
+select 
+    translate(lower(replace(ad,' ','')), 'ıöüçşğ', 'ioucsg') ||'.'||
+    translate(lower(replace(soyad,' ','')), 'ıöüçşğ', 'ioucsg') || '@dbhunter.net' as email 
+from personel;
+
+update personel set email = 
+    translate(lower(replace(ad,' ','')), 'ıöüçşğ', 'ioucsg') ||'.'||
+    translate(lower(replace(soyad,' ','')), 'ıöüçşğ', 'ioucsg') || '@dbhunter.net';
+
+--Unique index oluşturmaya çalışıyoruz fakat hata alacağız
+create unique index uq_personel_email on personel(email);
+
+--Tekrarlayan email adreslerinden birini güncelliyoruz
+update personel set email = 'servet.turan2@dbhunter.net' where personel_id = 5084;
+
+--------------------------------------------
+
+explain plan for
+select 
+    c.customer_id, c.company_name, c.contact_name,
+    o.order_id,  o.order_date, o.freight, o.ship_city 
+from customers c, orders o 
+where c.customer_id = o.customer_id;
+
+select plan_table_output 
+from table(dbms_xplan.display());
+
+select * from customers where customer_id = 'PARIS';
+
+--------------------------------------------
+--Function Based Index Oluşturma
+--------------------------------------------
+
+CREATE INDEX PERSONEL_NI2 ON PERSONEL(UPPER(AD));
+
+select * from personel where upper(ad) = 'SELEN'
+
+-----------------------------------------------------
+--ALIŞTIRMALARIN CEVAPLARI
+-----------------------------------------------------
+
+--------------------------------------------
+--Index Oluşturma
+--------------------------------------------
+
+--1. index
+create index ix_personel_id on personel(personel_id);
+
+--2. index
+create index uq_emp_city_postal on employees (city, postal_code);
+
+--3. index
+create index uq_student_name_course on student (name, course_name);
+
+--4. index
+create index ix_mudurluk_il on mudurluk(lower(il_adi));
+

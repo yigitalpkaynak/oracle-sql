@@ -1,0 +1,95 @@
+--------------------------------------------
+--SEQUENCE - Oluşturma
+--------------------------------------------
+
+create sequence sq_konum
+                increment by 1
+                start with 10
+                maxvalue 9999
+                nocache
+                nocycle;
+
+--------------------------------------------
+--SEQUENCE Kullanımı
+--------------------------------------------
+
+insert into konum(konum_id, konum_adi, il_kodu) 
+values(sq_konum.nextval, 'Mecidiyeköy', 34);
+
+insert into konum(konum_id, konum_adi , il_kodu) 
+values(sq_konum.nextval, 'Gölbaşı', 6);
+
+select * from konum order by konum_id;
+
+--------------------------------------------
+--SEQUENCE’ i Değiştirme
+--------------------------------------------
+
+ALTER SEQUENCE SEQ_KONUM
+               INCREMENT BY 11
+               MAXVALUE 10000
+               NOCACHE
+               NOCYCLE;
+
+--------------------------------------------
+--SYNONYM
+--------------------------------------------
+
+create synonym sube for mudurluk_sube;
+
+select * from sube;
+
+--Egitim2 kullanısıyla bağlanalım ve aynı select’i çalıştıralım
+select * from sube; !!!
+
+--------------------------------------------
+--SYNONYM - Public
+--------------------------------------------
+
+drop synonym sube;
+
+create public synonym sube for prm_mudurluk_sube;
+
+--Diğer kullanıcıyla bağlanalım ve aynı SQL’i çalıştıralım
+select * from sube;
+
+--------------------------------------------
+--DROP
+--------------------------------------------
+
+drop synonym mudurluk
+
+drop public synonym sube
+
+drop index personel_ni1
+
+drop table abone purge
+
+drop constraint personel_fk1
+
+-----------------------------------------------------
+--ALIŞTIRMALARIN CEVAPLARI
+-----------------------------------------------------
+
+--------------------------------------------
+--SEQUENCE - Oluşturma
+--------------------------------------------
+
+--Alıştırma-1
+
+create sequence sq_geriye_dogru
+    increment by -2
+    start with 100
+    maxvalue 100;
+
+--Alıştırma-2
+
+alter table colors add(color_id number);
+
+create sequence sq_colors
+    increment by 1
+    start with 1
+    nomaxvalue;
+
+update colors set color_id = sq_colors.nextval;
+

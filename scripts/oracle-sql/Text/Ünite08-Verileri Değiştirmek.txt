@@ -1,0 +1,181 @@
+--------------------------------------------
+--INSERT - Bir Tabloya Kayıt Ekleme
+--------------------------------------------
+
+insert into konum(konum_id, konum_adi, il_kodu)
+values (10, 'Ankara-Yenimahalle', 6);
+
+--------------------------------------------
+
+insert into konum
+values (11, 'İstanbul-Pendik', 34);
+
+--------------------------------------------
+
+insert into ceza_bilgi
+values(5021, 'Yüz Kızartıcı Suç', NULL, NULL);
+
+--------------------------------------------
+
+insert into ceza_bilgi
+values(6761, 'Uzaklaştırma', sysdate, to_date(’31.12.2011’, ‘DD.MM.YYYY’));
+
+--------------------------------------------
+--INSERT - Bir Tabloya Kayıt Ekleme - Default Değer
+--------------------------------------------
+
+create table default_ornek
+(
+    ad varchar2(20), 
+    soyad varchar2(30) default '--', 
+    tarih date
+);
+
+insert into default_ornek(ad, soyad, tarih) 
+values('Ali', default, sysdate);
+
+select * from default_ornek;
+
+insert into default_ornek (ad,soyad,tarih) 
+values(default, default, sysdate);
+
+--------------------------------------------
+INSERT INTO student(id, name, class_no, mark, gender, course_name)
+VALUES(36, 'Adele', DEFAULT, DEFAULT, DEFAULT, 'Finance');
+
+INSERT INTO student(id, name, class_no, mark, gender, course_name)
+VALUES(37, 'Tarkan', DEFAULT, 78, 'male', 'Zoology');
+
+INSERT INTO student(id, name, mark, course_name)
+VALUES(38, 'Ava Max', 85, 'History');
+
+--------------------------------------------
+--UPDATE - Verileri Güncelleme
+--------------------------------------------
+
+update personel 
+set maas = 2800 
+where personel_id = 5012
+
+--------------------------------------------
+
+update personel 
+set giris_tarihi = to_date('01.01.2012', 'DD.MM.YYYY') 
+where yonetici_id = 919
+
+--------------------------------------------
+
+update personel set 
+maas  = (select maas  from personel where personel_id = 5004),
+unvan = (select unvan from personel where personel_id = 5004)
+where personel_id = 5005
+
+--------------------------------------------
+
+update personel set 
+(maas, unvan)
+=
+(select maas, unvan from personel where personel_id = 5004)
+where personel_id = 5005
+
+--------------------------------------------
+
+update product p
+set net_price = price - price * 
+    (
+        select s.discount from product_segment s 
+        where p.segment_id = s.id 
+    )
+
+--------------------------------------------
+--DELETE - Verileri Silme
+--------------------------------------------
+
+delete from mudurluk where mudurluk_kodu = 62
+
+--------------------------------------------
+
+delete from mudurluk_sube 
+where mudurluk_kodu in 
+(
+  select mudurluk_kodu from mudurluk 
+  where il_adi = ‘HATAY’
+)
+
+--------------------------------------------
+
+delete from personel p
+where p.dept_id in 
+    (
+        select d.dept_id from departman d
+        where upper(d.dept_ismi) like '%CRM%'
+    )
+
+--------------------------------------------
+
+delete from student
+where id = 36;
+
+delete from basket_c
+where id_c in (8, 9);
+
+delete from student
+where name = 'arnold';
+
+delete from basket_c
+where id_c = 5;
+
+-----------------------------------------------------
+--ALIŞTIRMALARIN CEVAPLARI
+-----------------------------------------------------
+
+--------------------------------------------
+--INSERT - Bir Tabloya Kayıt Ekleme
+--------------------------------------------
+
+INSERT INTO student(id, name, class, mark, gender, course_name, email)
+VALUES(40, 'Zeki Müren', 2, 85, 'male', 'Conservatory', null);
+
+INSERT INTO student
+VALUES(41, 'Emel Sayın', 4, 96, DEFAULT, 'Finance', default);
+
+--------------------------------------------
+--UPDATE - Verileri Güncelleme
+--------------------------------------------
+
+--Alıştırma-1
+
+update personel p
+set maas = maas * 1.25 
+where p.dept_id in 
+    (
+        select d.dept_id from departman d
+        where upper(d.dept_ismi) like '%CRM%'
+    )
+
+--Alıştırma-2
+
+update iller i set bolge_adi = 
+    (
+        select bolge_adi from bolgeler b 
+        where b.bolge_kodu = i.bolge_kodu
+    );
+
+--------------------------------------------
+--DELETE - Verileri Silme
+--------------------------------------------
+
+delete from product p
+where p.segment_id in 
+    (
+        select ps.id from product_segment ps
+        where ps.segment = 'luxury'
+    )
+
+delete from product p
+where exists  
+    (
+        select 1 from product_segment ps
+        where ps.segment = 'Luxury'
+            and p.segment_id = ps.id
+    )

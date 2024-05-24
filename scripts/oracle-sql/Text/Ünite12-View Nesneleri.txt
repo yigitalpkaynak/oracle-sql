@@ -1,0 +1,121 @@
+--------------------------------------------
+--View Oluşturma
+--------------------------------------------
+
+create view vw_konum_bilgi as
+select ad, soyad, semt, konum_adi
+from personel pr, konum kn
+where kn.konum_id = pr.konum_id;
+
+--------------------------------------------
+
+create view vw_yoneticiler as
+select yn.yonetici_id, ps.ad, ps.soyad, 
+       ps.unvan, pk.konum_adi, 
+       (ps.maas + nvl(ps.prim,0)) gelir 
+from yonetici yn, personel ps, konum pk
+where ps.personel_id = yn.personel_id
+      and ps.konum_id = pk.konum_id;
+
+--------------------------------------------
+--View’ları Değiştirmek
+--------------------------------------------
+
+create or replace view vw_konum_bilgi as
+select ad || soyad adi_soyadi, semt, konum_adi, il_kodu
+from personel pr, konum kn
+where kn.konum_id = pr.konum_id
+
+--------------------------------------------
+--Bağımlı View
+--------------------------------------------
+
+create or replace view cust_order_prod_info as
+select 
+    co.customer_id, co.company_name,
+    co.order_date, co.freight, co.ship_city,
+    p.product_name, p.unit_price 
+from 
+    cust_order_info co,
+    order_details od, products p  
+where 1=1 
+    and co.order_id = od.order_id 
+    and p.product_id = od.product_id;
+
+--------------------------------------------
+--Drop View
+--------------------------------------------
+
+DROP VIEW CUST_ORDER_INFO;
+
+--------------------------------------------
+--View Üzerinde DML İşlemleri
+--------------------------------------------
+
+create view vw_uzman as
+select * from personel where unvan = 'UZMAN';
+
+select * from vw_uzman;
+
+update vw_uzman set konum_id = 5 where prim > 0;
+1 row updated
+
+select * from vw_uzman;
+
+--------------------------------------------
+
+create view vw_product_grand_lux as
+select id, name, price from product
+where segment_id = 1;
+
+update vw_product_grand_lux 
+set price = price * 1.3;
+
+delete from vw_product_grand_lux
+where id = 11;
+
+insert into vw_product_grand_lux(id, name, price)
+values(21, 'Air Cleaner', 1200);
+
+--------------------------------------------
+--View Üzerinde DML İşlemleri – With Read Only
+--------------------------------------------
+
+create or replace view vw_uzman as
+select * from personel where unvan = 'UZMAN'
+with read only;
+
+update vw_uzman set konum_id = 5 where prim > 0;
+
+--------------------------------------------
+--View Üzerinde DML İşlemleri – With Check Option
+--------------------------------------------
+
+create or replace view vw_uzman as
+select * from personel where unvan = 'UZMAN';
+
+update vw_uzman set unvan = 'ŞEF';
+15 rows updated.
+
+select * from vw_uzman;
+
+create or replace view vw_uzman as
+select * from personel where unvan = 'UZMAN'
+with check option;
+
+update vw_uzman set unvan = 'ŞEF';
+
+-----------------------------------------------------
+--ALIŞTIRMALARIN CEVAPLARI
+-----------------------------------------------------
+
+--------------------------------------------
+--View Oluşturma
+--------------------------------------------
+
+create view cust_order_info as
+select 
+    c.customer_id, c.company_name, c.contact_name,
+    o.order_id, o.order_date, o.freight, o.ship_city 
+from customers c, orders o 
+where c.customer_id = o.customer_id 

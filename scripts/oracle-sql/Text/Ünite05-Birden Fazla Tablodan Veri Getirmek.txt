@@ -1,0 +1,161 @@
+--------------------------------------------
+--Inner Join (Eşiti Olan Birleştirme)
+--------------------------------------------
+
+select pr.ad, pr.soyad, pr.konum_id, kn.konum_adi 
+from personel pr, konum kn
+where pr.konum_id = kn.konum_id
+
+
+select pr.ad, pr.soyad, pr.konum_id, kn.konum_adi 
+from personel pr inner join konum kn 
+     on pr.konum_id = kn.konum_id
+
+--------------------------------------------
+
+select md.mudurluk_kodu, md.mudurluk_adı, sb.sube_adı
+from mudurluk md, mudurluk_sube sb
+where md.mudurluk_kodu = sb.mudurluk_kodu;
+
+select md.mudurluk_kodu, md.mudurluk_adı, sb.sube_adı
+from mudurluk md
+inner join mudurluk_sube sb 
+  on md.mudurluk_kodu = sb.mudurluk_kodu;
+
+--------------------------------------------
+--Outer Join (Dış Birleştirme)
+--------------------------------------------
+
+select ad, soyad, konum_adi, kn.konum_id
+from personel pr, konum kn
+where pr.konum_id = kn.konum_id(+)
+order by konum_adi nulls first
+
+select ad, soyad, konum_adi, kn.konum_id
+from personel pr left outer join konum kn 
+     on pr.konum_id = kn.konum_id
+order by konum_adi nulls first
+
+--------------------------------------------
+--Right Join
+--------------------------------------------
+
+SELECT
+    id_a, fruit_a,
+    id_b, fruit_b
+FROM basket_a
+RIGHT JOIN basket_b 
+    ON fruit_a = fruit_b;
+
+--------------------------------------------
+--Full Join
+--------------------------------------------
+
+SELECT
+    id_a, fruit_a,
+    id_b, fruit_b
+FROM basket_a
+FULL JOIN basket_b 
+    ON fruit_a = fruit_b;
+
+--------------------------------------------
+--Eşiti Olmayan Birleştirme
+--------------------------------------------
+
+select pr.ad, pr.soyad, pr.maas, uc.derece, uc.aciklama 
+from personel pr, ucret_duzey uc
+where pr.maas between uc.maas_alt_limit and uc.maas_ust_limit
+order by 1,2
+
+--------------------------------------------
+--Self Join - (Kendine (İç) Birleştirme)
+--------------------------------------------
+
+select pr.ad, pr.soyad, 
+	 pry.ad || ' ' ||pry.soyad yönetici 
+from personel pr, yonetici yn, personel pry
+where pr.yonetici_id = yn.yonetici_id
+      and pry.personel_id = yn.personel_id
+order by 3;
+
+select 
+    e.first_name as emp_fname, e.last_name as emp_lname,
+    r.first_name as rep_fname, r.last_name as rep_lname,
+from employees e, employees r
+where e.reports_to = r.employee_id;
+
+--------------------------------------------
+--Kartezyen Çarpım
+--------------------------------------------
+
+select ad, soyad, pr.konum_id, kn.konum_adi 
+from personel pr, konum kn
+--where kn.konum_id = pr.konum_id
+order by 1,2
+
+SELECT brand, color
+FROM cars, colors;
+
+SELECT brand, color
+FROM cars
+CROSS JOIN colors;
+
+-----------------------------------------------------
+--ALIŞTIRMALARIN CEVAPLARI
+-----------------------------------------------------
+
+--------------------------------------------
+--Inner Join (Eşiti Olan Birleştirme)
+--------------------------------------------
+
+--Alıştırma-1
+
+select 
+    c.customer_id, c.company_name, 
+    o.order_date, o.shipped_date, o.ship_name  
+from customers c, orders o
+where o.customer_id  = c.customer_id;
+
+select 
+    c.customer_id, c.company_name, 
+    o.order_date, o.shipped_date, o.ship_name  
+from customers c 
+inner join orders o on o.customer_id  = c.customer_id;
+
+--Alıştırma-2
+
+select 
+    c.customer_id, c.company_name,
+    o.order_date, p.product_name 
+from customers c, orders o, 
+    order_details od, products p  
+where c.customer_id = o.customer_id 
+    and o.order_id = od.order_id 
+    and p.product_id = od.product_id
+
+--------------------------------------------
+--Left Join
+--------------------------------------------
+
+select md.mudurluk_kodu, md.mudurluk_adı, sb.sube_adı
+from mudurluk md, mudurluk_sube sb 
+where md.mudurluk_kodu = sb.mudurluk_kodu (+);
+
+select md.mudurluk_kodu, md.mudurluk_adı, sb.sube_adı
+from mudurluk md left outer join mudurluk_sube sb 
+  on md.mudurluk_kodu = sb.mudurluk_kodu;
+
+--------------------------------------------
+--Kartezyen Çarpım
+--------------------------------------------
+
+select c1.brand, c2.type_name, c3.color
+from cars c1, car_types c2, colors c3
+order by 1,2,3
+
+select c1.brand, c2.type_name, c3.color
+from cars c1 
+  cross join car_types c2 
+  cross join colors c3
+order by 1,2,3
+

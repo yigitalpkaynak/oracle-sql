@@ -1,0 +1,99 @@
+--------------------------------------------
+--COMMIT & ROLLBACK
+--------------------------------------------
+
+insert into colors
+values ('Red');
+
+commit;
+
+--------------------------------------------
+
+select * from cars;
+
+update cars set discount = 1000
+where id = 4;
+
+rollback;
+
+--------------------------------------------
+
+insert into colors values ('Pink');
+insert into colors values ('Navy');
+update colors set color='Light Blue' 
+where color='Blue'
+
+commit or rollback;
+
+--------------------------------------------
+
+select * from cars;
+
+update cars set brand = 'Mercedes Benz' 
+where brand = 'Mercedes';
+
+commit;
+
+--------------------------------------------
+--SAVEPOINT Komutu
+--------------------------------------------
+
+--Tüm segmentteki ürünlerin indirim oranı güncelleniyor
+update product_segment set discount = discount + 0.08;
+
+--Tüm ürünlerin indirim miktarları hesaplanarak net ücret güncelleniyor
+update product p set net_price = price - price * (select s.discount from product_segment s where s.id = p.segment_id);
+
+savepoint all_segment; --1.saveponit noktası
+
+--Lüks segmentteki ürünlerin indirim oranı güncelleniyor
+update product_segment set discount = discount + 0.15 where segment like '%Luxury%';
+
+--Lüks segmentteki ürünlerin indirim miktarları hesaplanarak net ücret güncelleniyor
+update product p set net_price = price - price * (select s.discount from product_segment s where s.id = p.segment_id)
+where p.segment_id in 
+    (select ps.id from product_segment ps where ps.segment like '%Luxury%');
+
+savepoint luxury_segment; --2.saveponit noktası
+
+select sum(net_price) from product;
+
+--Lüks olmayan segmentteki ürünlerin indirim oranı güncelleniyor
+update product_segment set discount = discount + 0.05 where segment = 'Mass';
+
+--Lüks olmayan segmentteki ürünlerin indirim miktarları hesaplanarak net ücret güncelleniyor
+update product p set net_price = price - price * (select s.discount from product_segment s where s.id = p.segment_id)
+where p.segment_id in 
+    (select ps.id from product_segment ps where ps.segment = 'Mass');
+
+select sum(net_price) from product;
+
+rollback;
+
+--------------------------------------------
+--COMMIT – ROLLBACK - Satır Kilitleme
+--------------------------------------------
+
+--Session-1
+select * from cars;
+
+update cars set price = 7500 
+where id = 4;
+
+--Session-2
+select * from cars;
+
+update cars set price = 8500 
+where id = 4;
+
+--------------------------------------------
+--FOR UPDATE
+--------------------------------------------
+
+select * from personel where unvan = 'TEKNİKER' for update;
+13 rows selected
+
+--Diğer kullanıcı ile
+update egitim.personel set maas = 4000 where personel_id = 5020;
+
+Commit;

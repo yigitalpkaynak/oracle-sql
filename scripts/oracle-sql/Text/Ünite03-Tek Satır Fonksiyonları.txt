@@ -1,0 +1,320 @@
+--------------------------------------------
+--Büyük-Küçük Karakter Dönüşüm Fonksiyonları	
+--------------------------------------------
+
+select ad, 
+	 lower(ad) kucuk_harf, 
+	 upper(ad) buyuk_harf, 
+	 initcap(ad) kelime_buyuk 
+from personel;
+
+select * from personel 
+where ad = 'serkan'
+
+select * from personel 
+where lower(ad) = 'serkan'
+
+--------------------------------------------
+--Karakter İşleme Fonksiyonları
+--------------------------------------------
+
+select concat(ad, soyad) birlestirme,
+       substr(ad, 1, 5) sinirlama,
+       length(ad) uzunluk,
+       instr(ad, 'A') nerede,
+       lpad(ad, 12, '-') sola_doldur,
+       rpad(ad, 12, '-') saga_doldur,
+       replace(ad, 'E', '*') degistir
+from personel
+
+--------------------------------------------
+--Sayı Fonksiyonları
+--------------------------------------------
+
+select maas, 
+	 round(maas), round(maas,1), round(maas,-1), 
+	 trunc(maas), trunc(maas,1), 
+	 floor(maas), 
+	 mod(maas,100) 
+from personel;
+
+--------------------------------------------
+--Tarih Fonksiyonları
+--------------------------------------------
+
+select months_between('01.07.2011', '01.01.2011') kac_ay,
+       sysdate simdi, 
+       add_months(sysdate,5) ay_ekle,
+       next_day(sysdate,'CUMA') sonraki_cuma, 
+       last_day(sysdate) ayin_son_gunu,
+       round(sysdate-60,'MONTH') r1,
+       round(sysdate,'YEAR') r2,
+       trunc(sysdate ,'MONTH') t1,
+       trunc(sysdate ,'YEAR') t2
+from dual;
+
+--------------------------------------------
+--Tarihler ile Aritmetik İşlemler
+--------------------------------------------
+
+select ad, soyad, giris_tarihi, 
+       giris_tarihi - 10, 
+       giris_tarihi + 2/24 
+From personel
+
+--------------------------------------------
+--TO_CHAR Fonksiyonu (Tarih)
+--------------------------------------------
+
+select giris_tarihi, 
+       to_char(giris_tarihi, 'dd.mm.yyyy') fm1,
+       to_char(giris_tarihi, 'DD Month YYYY') fm2,
+       to_char(giris_tarihi, 'Ddspth Month YYYY HH:MI:SS') fm3,
+       to_char(giris_tarihi, 'MM') fm4,
+       to_char(giris_tarihi, 'YYYY') fm5,
+       to_char(giris_tarihi, 'DAY') fm6,
+       to_char(giris_tarihi, 'Q') fm7
+from personel
+
+SELECT customer_id, order_date,
+       TO_CHAR(order_date, 'HH24:MI:SS')             as TC1,
+       TO_CHAR(order_date, 'MON-DD-YYYY HH12:MI PM') as TC2,
+       TO_CHAR(order_date, 'DD.MM.YYYY HH24:MI')     as TC3,
+       TO_CHAR(order_date, 'MON-DAY-YYYY HH12:MI')   as TC4,
+       TO_CHAR(order_date, 'Month DD, YYYY')         as TC5,
+       TO_CHAR(order_date, 'YYYYMMDD')               as TC6
+FROM orders;
+
+--------------------------------------------
+--TO_CHAR Fonksiyonu (Sayı)
+--------------------------------------------
+
+select maas, 
+       to_char(maas, '999999.99') fm1,
+       to_char(maas, '999,999.99') fm2,
+       to_char(maas, '9990D000000') fm3,
+       to_char(maas, '$99,999.00') fm4
+from personel
+
+--------------------------------------------
+--TO_NUMBER ve TO_DATE Fonksiyonları
+--------------------------------------------
+
+select to_date('21.06.2011', 'dd.mm.yyyy') tarih,
+       to_number('00001') sayi1,
+       to_number('123.45', '9999.99') sayi2
+from dual
+
+SELECT TO_DATE('20230405', 'YYYYMMDD') TD1,
+       TO_DATE('2023 APRIL 05', 'YYYY MONTH DD') TD2,
+       TO_DATE('2023 april 05', 'YYYY month DD') TD3,
+       TO_DATE('2023 APR 05', 'YYYY MON DD') TD4,
+       TO_DATE('2023 240', 'YYYY DDD') TD5,
+       TO_DATE('February 08, 2023', 'Month DD, YYYY') TD6
+FROM DUAL;
+
+SELECT TO_NUMBER('123,45') TN1,
+       TO_NUMBER('123.45', '9999.99')  TN2,
+       TO_NUMBER('$12,123.23','$999,999.99') TN3,
+       TO_NUMBER('-$12,345.67', '$99,999.99') TN4,
+       TO_NUMBER('00005469', '9999999999') TN5
+FROM DUAL
+
+--------------------------------------------
+--CAST Fonksiyonu
+--------------------------------------------
+
+select
+    cast('100' as integer) as cast1,
+    cast('01/01/2021' as date) as cast2,
+    cast('15/oct/2022' as date) as cast3,
+    cast('10,25' as float) as cast4,
+    cast(876498 as varchar2(10)) cast5,
+    cast('22-jun-2023' as timestamp with local time zone) as cast6,
+    cast('5 10:5:4' as interval day to second) as cast7
+from dual;
+
+--------------------------------------------
+--İç-İçe Fonksiyonlar
+--------------------------------------------
+
+select semt, 
+       substr(semt, instr(lower(semt),'t'), 2) deger 
+from personel
+
+--------------------------------------------
+--NVL Fonksiyonu
+--------------------------------------------
+
+select semt, 
+       nvl(semt, 'Semt Bilgisi Girilmemiş') deger 
+from personel
+
+--------------------------------------------
+--NULLIF Fonksiyonu
+--------------------------------------------
+
+select mudurluk_adi, musteri_sayisi, musteri_hedefi, 
+       nullif(musteri_sayisi, musteri_hedefi) hedef_olmusmu
+from mudurluk_hedef
+
+--------------------------------------------
+--COALESCE Fonksiyonu
+--------------------------------------------
+
+select coalesce(null, 1, null, 4) deger from dual;
+
+select personel_id, giris_tarihi, cikis_tarihi,
+       coalesce(giris_tarihi, cikis_tarihi) deger
+from personel;
+
+--------------------------------------------
+--DECODE Fonksiyonu
+--------------------------------------------
+
+select ad, soyad, unvan, maas, 
+       decode
+       (
+          unvan, 
+          'MÜHENDİS', maas*0.05,   
+          'UZMAN',    maas*0.02, 
+          maas*0.03
+       ) kesinti
+from personel
+
+--------------------------------------------
+--CASE İfadesi
+--------------------------------------------
+
+select maas,
+       case
+         when maas < 2000                   then 'Düşük Maaş'
+         when maas >= 2000 and maas <= 5000 then 'Orta Maaş'
+         when maas > 5000                   then 'Yüksek Maaş'
+       end seviye
+from personel
+
+-----------------------------------------------------
+--ALIŞTIRMALARIN CEVAPLARI
+-----------------------------------------------------
+
+--------------------------------------------
+--Büyük-Küçük Karakter Dönüşüm Fonksiyonları	
+--------------------------------------------
+
+select dept_id, upper(dept_ismi) 
+from departman
+where lower(dept_ismi) like '%uygulama%'
+
+--------------------------------------------
+--Karakter İşleme Fonksiyonları
+--------------------------------------------
+
+select * from orders 
+where ship_address like '%Ave%';
+
+select * from orders
+where initcap(ship_address) like '%Ave%';
+
+select * from orders 
+where instr(ship_address,'Ave') > 0;
+
+--------------------------------------------
+--Sayı Fonksiyonları
+--------------------------------------------
+
+select p.unit_price, 
+    round(unit_price,1) as unit_price_d1, 
+    round(units_in_stock/20) as package_count, 
+    mod(units_in_stock,20) as remaining_amount
+from products p;
+
+--------------------------------------------
+--Tarih Fonksiyonları
+--------------------------------------------
+
+select giris_tarihi, 
+    add_months(giris_tarihi, 180) as tazminat_hakedis_tarihi,
+    maas * 1.5 as tazminat_miktari
+from personel
+where giris_tarihi is not null
+    and cikis_tarihi is null;
+
+--------------------------------------------
+--TO_CHAR Fonksiyonu
+--------------------------------------------
+
+select 
+    'Müşteri: ' || customer_id ||
+    ', Sipariş Tarihi:' || to_char(order_date, 'mm-dd-yyyy') || 
+    ', Gönderilme Tarihi: ' || to_char(shipped_date, 'mm-dd-yyyy') ||
+    ', Kargo Süresi (gün): ' || to_char(shipped_date - order_date) ||
+    ', Ücret: ' || to_char(freight, '9990D00') as siparis_bilgi
+from orders ;
+
+--------------------------------------------
+--COALESCE Fonksiyonu
+--------------------------------------------
+
+select 
+    ad, soyad, maas, prim, 
+    maas + coalesce(prim,0) hesaba_yatan 
+from personel;
+
+--------------------------------------------
+--DECODE Fonksiyonu
+--------------------------------------------
+
+select order_id, customer_id, 
+    decode(ship_via, 1, 'Hava Yolu', 2, 'Deniz Yolu', 3, 'Kara Yolu') as ship_type 
+from orders;
+
+--------------------------------------------
+--DECODE vs CASE
+--------------------------------------------
+
+--Soru
+select semt, 
+       decode(semt, 
+              'BATIKENT', 'YM', 
+              'DEMET', 'YM', 
+              'ÜMİTKÖY', 'YM', 
+              'ÖVEÇLER', 'ÇN', 
+              'ÇUKURAMBAR', 'ÇN', 
+              'DİKMEN', 'ÇN', 
+              'ANKARA') ilce
+from personel;
+
+--Cevap
+select semt,
+       case
+         when semt in ('BATIKENT', 'DEMET', 'ÜMİTKÖY') then 'YM'
+         when semt in ( 'ÖVEÇLER', 'ÇUKURAMBAR', 'DİKMEN') then 'ÇN'
+         else 'ANKARA'
+       end ilce
+from personel;
+
+--------------------------------------------
+--CASE İfadesi
+--------------------------------------------
+
+select company_name, contact_name, contact_title,
+    case 
+        when lower(contact_title) like '%manager%' then 'Manageral Position'
+        when lower(contact_title) like '%admin%' then 'Administrative Position'
+        when lower(contact_title) like '%asistant%' then 'Assistant Position'
+        when lower(contact_title) like '%representative%' then 'Representative Position'
+        else 'Other Position'
+    end as position_name
+from customers;
+
+--------------------------------------------
+--Tek Satır Fonksiyonları - Mix
+--------------------------------------------
+
+select ad, soyad, 
+       to_char(giris_tarihi, 'dd month yyyy') giris, 
+       decode(prim, null, 'Normal', 'Torpilli') seviye, 
+       initcap(unvan) unvan
+from personel
+where instr(lower(unvan),'d') > 0

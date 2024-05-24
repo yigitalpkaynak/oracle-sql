@@ -1,0 +1,135 @@
+--------------------------------------------
+--UNION Operatörü
+--------------------------------------------
+
+SELECT fruit_a FROM basket_a
+UNION
+SELECT fruit_b FROM basket_b
+
+--------------------------------------------
+
+select ad, soyad, maas, unvan from personel
+Where maas between 1200 and 2500
+      and konum_id = 1
+union
+select ad, soyad, maas, unvan from personel
+Where maas between 1800 and 5000
+      and konum_id = 1
+
+--------------------------------------------
+--UNION ALL Operatörü
+--------------------------------------------
+
+select ad, soyad, maas, unvan from personel
+Where maas between 1200 and 2500
+      and konum_id = 1
+union all
+select ad, soyad, maas, unvan from personel
+Where maas between 1800 and 5000
+      and konum_id = 1
+order by 1
+
+--------------------------------------------
+
+SELECT fruit_a FROM basket_a
+UNION ALL
+SELECT fruit_b FROM basket_b
+
+--------------------------------------------
+--INTERSECT Operatörü
+--------------------------------------------
+
+select ad, soyad, maas, unvan from personel
+Where maas between 1200 and 2500
+      and konum_id = 1
+intersect
+select ad, soyad, maas, unvan from personel
+Where maas between 1800 and 5000
+      and konum_id = 1
+
+--------------------------------------------
+--MINUS Operatörü
+--------------------------------------------
+
+select ad, soyad, maas, unvan from personel
+Where maas between 1800 and 5000
+      and konum_id = 1
+minus
+select ad, soyad, maas, unvan from personel
+Where maas between 1200 and 2500
+      and konum_id = 1
+
+--------------------------------------------
+
+select personel_id from personel
+minus
+select personel_id from ceza_bilgi
+order by 1
+
+--------------------------------------------
+
+select personel_id from personel
+minus
+select personel_id from personel_izinleri
+order by 1
+
+--------------------------------------------
+
+SELECT fruit_a FROM basket_a
+MINUS
+SELECT fruit_b FROM basket_b
+
+-----------------------------------------------------
+--ALIŞTIRMALARIN CEVAPLARI
+-----------------------------------------------------
+
+--------------------------------------------
+--UNION Operatörü
+--------------------------------------------
+
+select country, company_name, count(*) as order_count
+from customers c, orders o
+where country = ‘France’
+    and c.customer_id = o.customer_id 
+group by country, company_name, c.customer_id 
+union
+select country, company_name, count(*) as order_count
+from customers c, orders o
+where country = ‘Germany’
+    and c.customer_id = o.customer_id 
+group by country, company_name, c.customer_id 
+
+--------------------------------------------
+--UNION ALL Operatörü
+--------------------------------------------
+
+select 'Customer' as type_name, company_name
+from customers
+union all
+select 'Shippers' as type_name, company_name
+from shippers
+union all
+select 'Suppliers' as type_name, company_name
+from suppliers
+
+--------------------------------------------
+--INTERSECT Operatörü
+--------------------------------------------
+
+select s.company_name  
+from products p, suppliers s 
+where category_id = 2
+    and s.supplier_id = p.supplier_id 
+intersect
+select s.company_name  
+from products p, suppliers s 
+where category_id = 5
+    and s.supplier_id = p.supplier_id 
+
+--------------------------------------------
+--MINUS Operatörü
+--------------------------------------------
+
+select customer_id from customers c 
+minus
+select customer_id from orders o
